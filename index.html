@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Garima 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ffd6e8, #ffe9f2);
+  overflow: hidden;
+}
+
+/* Screens */
+.screen {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+.screen.active { display: flex; }
+
+.card {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  padding: 40px;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px rgba(255,105,180,0.3);
+  max-width: 520px;
+  animation: fadeUp 1s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.7rem;
+  color: #ff4d88;
+}
+
+h2 {
+  color: #ff3366;
+}
+
+button {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#yesBtn {
+  background: linear-gradient(135deg, #ff4d88, #ff85a2);
+  color: white;
+}
+
+#noBtn {
+  background: #e0e0e0;
+  color: #555;
+  position: absolute;
+}
+
+.buttons {
+  margin-top: 35px;
+  position: relative;
+  height: 150px;
+}
+
+.typing {
+  font-size: 1.15rem;
+  color: #444;
+  min-height: 140px;
+}
+
+.continue {
+  margin-top: 25px;
+  background: #ff4d88;
+  color: white;
+}
+
+p {
+  color: #555;
+  line-height: 1.8;
+}
+
+.memories {
+  margin-top: 25px;
+  background: #ff85a2;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  border-radius: 22px;
+  margin-top: 22px;
+  display: none;
+  box-shadow: 0 0 30px rgba(255, 77, 136, 0.6);
+}
+
+/* Floating hearts */
+.heart {
+  position: absolute;
+  bottom: -20px;
+  animation: float 6s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes float {
+  from { transform: translateY(0); opacity: 0.7; }
+  to { transform: translateY(-120vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 Background Music -->
+<audio id="bgMusic" loop>
+  <source src="Ye Tune Kya Kiya Song.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Screen 1 -->
+<div class="screen active" id="screen1">
+  <div class="card">
+    <h1>Hey Garima! 💖</h1>
+    <h2>Will you be my Valentine?</h2>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes ❤️</button>
+      <button id="noBtn">No 🙄</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 2 -->
+<div class="screen" id="screen2">
+  <div class="card">
+    <div class="typing" id="typingText"></div>
+    <button class="continue" onclick="goToScreen(3)">Continue 💕</button>
+  </div>
+</div>
+
+<!-- Screen 3 -->
+<div class="screen" id="screen3">
+  <div class="card">
+    <h2>For You, Garima 💘</h2>
+    <p>
+      Garima, you are the calm in my chaos and the smile I look for every day.
+      The way you make everything feel warmer and happier is something I’ll
+      always cherish. I don’t just want today with you — I want every tomorrow too.
+    </p>
+
+    <button class="memories" onclick="showMemory()">Our Memory 📸</button>
+    <img id="memoryPic" src="garima.jpeg" alt="Garima">
+  </div>
+</div>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const music = document.getElementById("bgMusic");
+
+let yesScale = 1;
+let dodgeCount = 0;
+
+/* Play music on first interaction (browser rule) */
+document.body.addEventListener("click", () => {
+  music.play();
+}, { once: true });
+
+/* Dodge function (desktop + mobile) */
+function dodgeNo() {
+  const x = Math.random() * (window.innerWidth - 160);
+  const y = Math.random() * (window.innerHeight - 160);
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+
+  yesScale += 0.12;
+  yesBtn.style.transform = `scale(${yesScale})`;
+
+  dodgeCount++;
+
+  /* 😏 Fake No → Yes */
+  if (dodgeCount > 6) {
+    goToScreen(2);
+    typeText();
+  }
+}
+
+noBtn.addEventListener("mouseover", dodgeNo);
+noBtn.addEventListener("touchstart", dodgeNo);
+
+/* Yes click */
+yesBtn.addEventListener("click", () => {
+  goToScreen(2);
+  typeText();
+});
+
+/* Screen switch */
+function goToScreen(num) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen" + num).classList.add("active");
+}
+
+/* Typing animation */
+const message =
+"So… Garima, today isn’t just any normal day. It’s Valentine’s Day 💘, and there’s something I’ve wanted to tell you for a really long time.";
+
+let index = 0;
+function typeText() {
+  const target = document.getElementById("typingText");
+  if (index < message.length) {
+    target.innerHTML += message.charAt(index);
+    index++;
+    setTimeout(typeText, 45);
+  }
+}
+
+/* Show memory */
+function showMemory() {
+  document.getElementById("memoryPic").style.display = "block";
+}
+
+/* Floating hearts */
+setInterval(() => {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "💖";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = Math.random() * 20 + 15 + "px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 6000);
+}, 450);
+</script>
+
+</body>
+</html>
