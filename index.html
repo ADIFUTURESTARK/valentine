@@ -29,12 +29,11 @@ body{
 .screen.active{display:flex;}
 
 .card{
-  background:rgba(255,255,255,0.93);
-  backdrop-filter:blur(14px);
+  background:rgba(255,255,255,0.95);
   padding:35px;
   border-radius:30px;
   box-shadow:0 25px 60px rgba(255,105,180,.35);
-  max-width:560px;
+  max-width:580px;
   width:100%;
   animation:fadeUp 1s ease;
 }
@@ -75,7 +74,7 @@ button{
   height:140px;
 }
 
-/* HOME GALLERY (5 photos) */
+/* HOME GALLERY */
 .home-gallery{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -87,15 +86,14 @@ button{
 
 .pic-card img{
   width:100%;
-  height:135px;
-  object-fit:cover;
+  height:150px;
+  object-fit:contain;
+  background:#ffe3ec;
+  padding:6px;
   border-radius:22px;
   border:3px solid #ff85a2;
   box-shadow:0 10px 25px rgba(255,105,180,.4);
-  transition:.4s;
 }
-
-.pic-card img:hover{transform:scale(1.08);}
 
 .pic-card span{
   position:absolute;
@@ -107,40 +105,33 @@ button{
   padding:4px;
 }
 
-.pic-card.wide{
-  grid-column:span 2;
-}
+.pic-card.wide{grid-column:span 2;}
+.pic-card.wide img{height:180px;}
 
-.pic-card.wide img{
-  height:160px;
-}
-
-/* Typing */
-.typing{
-  min-height:150px;
+/* Screen 2 text */
+.long-text{
+  text-align:left;
   color:#444;
-  font-size:1.1rem;
+  line-height:1.8;
+  font-size:1.05rem;
 }
 
-/* MEMORY PAGE */
+/* Memory page */
 .memory-layout{
   display:flex;
   gap:20px;
   align-items:center;
 }
-
 .memory-photo{
   position:relative;
   flex:1;
 }
-
 .memory-photo img{
   width:100%;
   border-radius:26px;
   border:4px solid #ff85a2;
   box-shadow:0 0 40px rgba(255,77,136,.6);
 }
-
 .corner-heart{
   position:absolute;
   top:-12px;
@@ -150,19 +141,11 @@ button{
   border-radius:50%;
   padding:6px;
 }
-
 .memory-text{
   flex:1;
   text-align:left;
 }
 
-.memories{
-  margin-top:20px;
-  background:#ff85a2;
-  color:white;
-}
-
-/* Mobile */
 @media(max-width:768px){
   .memory-layout{
     flex-direction:column;
@@ -174,8 +157,8 @@ button{
 
 <body>
 
-<!-- MUSIC -->
-<audio id="bgMusic" loop>
+<!-- MUSIC (auto-play muted, then fades in) -->
+<audio id="bgMusic" autoplay muted loop>
   <source src="Ye Tune Kya Kiya Song.mp3" type="audio/mpeg">
 </audio>
 
@@ -200,10 +183,21 @@ button{
   </div>
 </div>
 
-<!-- SCREEN 2 -->
+<!-- SCREEN 2 (LONG PARAGRAPHS) -->
 <div class="screen" id="screen2">
   <div class="card">
-    <div class="typing" id="typingText"></div>
+    <div class="long-text">
+      <p>Garima 💕, I don’t think you realize how quietly you became such an important part of my life. It wasn’t planned, it wasn’t rushed—it just happened, naturally and beautifully.</p>
+
+      <p>Somewhere between our conversations, your smile, and the comfort I feel when I think of you, you became my favorite thought of the day 🌸. You make things feel lighter without even trying.</p>
+
+      <p>With you, I feel calm. I feel understood. I feel like I don’t have to pretend or explain myself too much 🤍. Just being you is enough to make my days better.</p>
+
+      <p>Even on days when everything feels messy or tiring, the thought of you brings a small, genuine smile to my face 💫. That feeling is rare, and I treasure it more than I can explain.</p>
+
+      <p>This Valentine’s Day isn’t about something big or dramatic—it’s about how real this feels, and how grateful I am to have you in my life 💖.</p>
+    </div>
+
     <button onclick="goToScreen(3)">Continue 💕</button>
   </div>
 </div>
@@ -212,11 +206,8 @@ button{
 <div class="screen" id="screen3">
   <div class="card">
     <h2>For You, Garima 💘</h2>
-    <p>
-      Garima, you became my favorite part of every day without even trying.
-      You bring calm, warmth, and happiness into my life in the most beautiful way.
-    </p>
-    <button class="memories" onclick="goToScreen(4)">Our Memories 💘</button>
+    <p>You are my comfort, my smile, and my favorite feeling.</p>
+    <button onclick="goToScreen(4)">Our Memories 💘</button>
   </div>
 </div>
 
@@ -230,11 +221,7 @@ button{
       </div>
       <div class="memory-text">
         <h2>Our Memories 💕</h2>
-        <p>
-          This photo isn’t just a picture to me—it’s a feeling.
-          It reminds me of how naturally you make everything better.
-          You are my comfort, my smile, and my favorite memory 💖.
-        </p>
+        <p>This photo holds a feeling I want to keep forever. You make moments feel special just by being in them 💗.</p>
       </div>
     </div>
   </div>
@@ -245,41 +232,31 @@ const yesBtn=document.getElementById("yesBtn");
 const noBtn=document.getElementById("noBtn");
 const music=document.getElementById("bgMusic");
 
-document.body.addEventListener("click",()=>music.play(),{once:true});
+/* Fade-in music automatically */
+let vol=0;
+music.volume=0;
+const fade=setInterval(()=>{
+  if(vol<0.8){
+    vol+=0.02;
+    music.volume=vol;
+    music.muted=false;
+  }else clearInterval(fade);
+},200);
 
-let scale=1,dodge=0;
-
-function dodgeNo(){
-  noBtn.style.left=Math.random()*200+"px";
-  noBtn.style.top=Math.random()*80+"px";
-  scale+=.1;
-  yesBtn.style.transform=`scale(${scale})`;
+/* No button dodge ONLY */
+let dodge=0;
+noBtn.addEventListener("mouseover",()=>{
+  noBtn.style.left=Math.random()*220+"px";
+  noBtn.style.top=Math.random()*90+"px";
   dodge++;
-  if(dodge>6) startYes();
-}
+});
 
-noBtn.onmouseover=dodgeNo;
-noBtn.ontouchstart=dodgeNo;
-yesBtn.onclick=startYes;
-
-function startYes(){
-  goToScreen(2);
-  typeText();
-}
+/* Yes click ONLY triggers next */
+yesBtn.onclick=()=>goToScreen(2);
 
 function goToScreen(n){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("screen"+n).classList.add("active");
-}
-
-const msg="Garima… today isn’t just any normal day. It’s Valentine’s Day 💘 and I’ve wanted to tell you this for a really long time.";
-let i=0;
-
-function typeText(){
-  if(i<msg.length){
-    document.getElementById("typingText").innerHTML+=msg[i++];
-    setTimeout(typeText,45);
-  }
 }
 </script>
 
